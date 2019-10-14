@@ -48,4 +48,31 @@ router.post('/register', (req, res) => {
     });
 });
 
+router.post('/login', (req, res) => {
+  const { username, password } = req.body;
+  if (!username && !password) {
+    res.status(401).json({ message: 'Invalid Credentials: Please Try Again' });
+  } else {
+    Users.findById({ username })
+      .first()
+      .then(user => {
+        if (user && bcrypt.compareSync(password, user.password)) {
+          res
+            .status(200)
+            .json({
+              message: `You have successfully logged in ${user.username}!`
+            })
+            .catch(err => {
+              res
+                .status(500)
+                .json({
+                  message: 'There is a problem logging into the database',
+                  err
+                });
+            });
+        }
+      });
+  }
+});
+
 module.exports = router;
