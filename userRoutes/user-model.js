@@ -7,8 +7,7 @@ module.exports = {
 };
 
 function find() {
-  //Calling find returns a promise that resolves to an array of all schemes in the database
-  return db('users');
+  return db('users').select('id', 'username', 'password');
 }
 
 function findById(id) {
@@ -19,5 +18,10 @@ function findById(id) {
 }
 
 function add(user) {
-  return db('users').insert(user, 'id');
+  return db('users')
+    .insert(user, 'id')
+    .then(ids => {
+      const [id] = ids;
+      return findById(id);
+    });
 }
