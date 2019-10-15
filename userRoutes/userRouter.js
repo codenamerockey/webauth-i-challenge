@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const Users = require('./user-model.js');
+const restricted = require('./restricted-middleware.js');
 
 const router = express.Router();
 
@@ -8,7 +9,8 @@ const router = express.Router();
   res.send('<h1>Welcome to my user router</h1>');
 });*/
 
-router.get('/', (req, res) => {
+router.get('/', restricted, (req, res) => {
+  console.log('username', req.session.username);
   Users.find()
     .then(listedUsers => {
       res.status(200).json(listedUsers);
@@ -54,6 +56,7 @@ router.post('/login', (req, res) => {
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
+        req.session.username = user.username;
         res
           .status(200)
           .json({ message: `${user.username} You have been logged in !` });
@@ -68,4 +71,15 @@ router.post('/login', (req, res) => {
     });
 });
 
+router.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      res.status(200).json({
+        message: 'You have successfully logged out'
+      });
+    });
+  } else {
+    res.status(200).json({ message: 'already logged out' });
+  }
+});
 module.exports = router;
