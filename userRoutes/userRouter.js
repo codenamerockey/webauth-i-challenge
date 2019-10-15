@@ -50,22 +50,22 @@ router.post('/register', (req, res) => {
 router.post('/login', (req, res) => {
   let { username, password } = req.body;
 
-  if (username && password) {
-    Users.findBy({ username })
-      .first()
-      .then(user => {
-        if (user && bcrypt.compareSync(password, user.password)) {
-          res.status(200).json({ message: `Welcome ${user.username}!` });
-        } else {
-          res.status(401).json({ message: 'You cannot pass!!' });
-        }
-      })
-      .catch(error => {
-        res.status(500).json(error);
-      });
-  } else {
-    res.status(400).json({ message: 'please provide credentials' });
-  }
+  Users.findBy({ username })
+    .first()
+    .then(user => {
+      if (user && bcrypt.compareSync(password, user.password)) {
+        res
+          .status(200)
+          .json({ message: `${user.username} You have been logged in !` });
+      } else {
+        res
+          .status(401)
+          .json({ message: `Sorry please provide valid credentials` });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ message: 'Not able to login to the database' });
+    });
 });
 
 module.exports = router;
