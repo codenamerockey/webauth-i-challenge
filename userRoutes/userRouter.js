@@ -74,12 +74,21 @@ router.post('/login', (req, res) => {
 router.get('/logout', (req, res) => {
   if (req.session) {
     req.session.destroy(err => {
-      res.status(200).json({
-        message: 'You have successfully logged out'
-      });
+      if (err) {
+        res.json({ message: `unable to log you out` });
+      } else {
+        res.status(200).json({
+          message: 'You have successfully logged out'
+        });
+      }
     });
   } else {
-    res.status(200).json({ message: 'already logged out' });
+    res
+      .status(200)
+      .json({
+        message:
+          "You have already been logged out now go....Be — don't try to become"
+      });
   }
 });
 module.exports = router;
